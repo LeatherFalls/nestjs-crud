@@ -18,4 +18,8 @@ export class UserService {
   async findAll() {
     return this.userRepository.find();
   }
+
+  async findById(id: string): Promise<UserEntity> {
+    return this.userRepository.findOneBy({ id });
+  }
 }

@@ -15,4 +15,9 @@ export class UserController {
   async findAll() {
     return this.userService.findAll();
   }
+
+  @Get('/:id')
+  async findById(id: string) {
+    return this.userService.findById(id);
+  }
 }
