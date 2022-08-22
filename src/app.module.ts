@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from './app/user/user.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -8,13 +9,14 @@ dotenv.config();
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: '192.168.128.3',
+      host: '172.18.0.3',
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       port: Number(process.env.DB_PORT),
       synchronize: true,
       entities: [__dirname + '/**/*.entity{.js,.ts}'],
     }),
+    UserModule,
   ],
 })
 export class AppModule {}
