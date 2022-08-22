@@ -6,21 +6,22 @@ services:
       dockerfile: Dockerfile
       context: .
     depends_on:
-      - postgres
+      - db
     environment:
       DATABASE_URL: postgres://user:password@postgres:5432/db
       PORT: 3000
     ports:
       - "8080:3000"
 
-  postgres:
+  db:
     image: postgres:10.4
     ports:
       - "35000:5432"
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: db
+      DB_USER: postgres
+      DB_PASSWORD: vini81342714
+      DB_NAME: db
+      DB_HOST: localhost
 
   redis:
     image: bitnami/redis:latest
