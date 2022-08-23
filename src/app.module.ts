@@ -5,6 +5,7 @@ import { AuthModule } from './app/auth/auth.module';
 import * as dotenv from 'dotenv';
 import * as redisStore from 'cache-manager-redis-store';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { MoviesModule } from './app/movies/movies.module';
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ dotenv.config();
         port: process.env.REDIS_PORT,
       },
     }),
+    MoviesModule,
   ],
   providers: [
     {
