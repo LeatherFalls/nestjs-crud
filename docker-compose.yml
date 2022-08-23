@@ -7,6 +7,7 @@ services:
       context: .
     depends_on:
       - db
+      - redis
     environment:
       DATABASE_URL: postgres://user:password@postgres:5432/db
       PORT: 3000
@@ -24,8 +25,7 @@ services:
       DB_HOST: localhost
 
   redis:
-    image: bitnami/redis:latest
-    expose:
-      - 6379
-    environment:
-      REDIS_PASSWORD: password
+    image: redis
+    hostname: redis
+    ports:
+      - "6379:6379"

@@ -1,8 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, CacheModule, CacheInterceptor } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './app/user/user.module';
 import { AuthModule } from './app/auth/auth.module';
 import * as dotenv from 'dotenv';
+import * as redisStore from 'cache-manager-redis-store';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 dotenv.config();
 
@@ -10,7 +12,7 @@ dotenv.config();
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: '172.18.0.3',
+      host: '172.20.0.2',
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       port: Number(process.env.DB_PORT),
@@ -19,6 +21,20 @@ dotenv.config();
     }),
     UserModule,
     AuthModule,
+    CacheModule.register({
+      isGlobal: true,
+      store: redisStore,
+      socket: {
+        host: '172.20.0.3',
+        port: process.env.REDIS_PORT,
+      },
+    }),
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
   ],
 })
 export class AppModule {}
