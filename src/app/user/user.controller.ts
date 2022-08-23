@@ -3,7 +3,10 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
 } from '@nestjs/common';
@@ -32,7 +35,7 @@ export class UserController {
 
   @Put('/:id')
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() data: Save,
   ): Promise<UserEntity> {
     const result = await this.userService.update(data, id);
@@ -41,8 +44,8 @@ export class UserController {
   }
 
   @Delete('/:id')
-  async delete(@Param('id') id: string): Promise<object> {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.userService.delete(id);
-    return { message: 'user deleted' };
   }
 }

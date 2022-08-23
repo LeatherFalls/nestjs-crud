@@ -1,4 +1,13 @@
-import { IsEmail, IsInt, IsNotEmpty, Length, Max, Min } from 'class-validator';
+import {
+  IsEmail,
+  IsInt,
+  IsNotEmpty,
+  Length,
+  Matches,
+  Max,
+  Min,
+} from 'class-validator';
+import { RegExHelper } from '../helper/regex.helper';
 
 export class Save {
   @IsNotEmpty({
@@ -22,6 +31,9 @@ export class Save {
   })
   @Length(5, 30, {
     message: 'password length must be beetwen 5 and 30 characters long',
+  })
+  @Matches(RegExHelper.password, {
+    message: 'incorrect password format',
   })
   password: string;
 
