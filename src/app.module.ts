@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './app/user/user.module';
+import { AuthModule } from './app/auth/auth.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -17,6 +18,7 @@ dotenv.config();
       entities: [__dirname + '/**/*.entity{.js,.ts}'],
     }),
     UserModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

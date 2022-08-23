@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Save } from './dto/save.dto';
 import { UserEntity } from './user.entity';
+import { FindOneOptions } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -23,6 +24,14 @@ export class UserService {
 
   async findById(id: string): Promise<UserEntity> {
     return this.userRepository.findOneBy({ id });
+  }
+
+  async findOneOrFail(options: FindOneOptions<UserEntity>) {
+    try {
+      return await this.userRepository.findOneOrFail(options);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
   }
 
   async update(data: Save, id: string): Promise<UserEntity> {
