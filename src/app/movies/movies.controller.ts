@@ -3,7 +3,10 @@ import {
   CacheKey,
   CacheTTL,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
   Post,
@@ -82,5 +85,11 @@ export class MoviesController {
     const result = await this.moviesService.update(data, id);
 
     return result;
+  }
+
+  @Delete('/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Param('id', new ParseUUIDPipe()) id: string) {
+    await this.moviesService.delete(id);
   }
 }

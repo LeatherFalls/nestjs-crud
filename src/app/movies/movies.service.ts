@@ -54,4 +54,8 @@ export class MoviesService {
 
     return result;
   }
+
+  async delete(id: string) {
+    this.moviesRepository.delete(id);
+  }
 }
