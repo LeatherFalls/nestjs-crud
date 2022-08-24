@@ -13,7 +13,7 @@ dotenv.config();
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: '172.20.0.2',
+      host: '172.20.0.3',
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       port: Number(process.env.DB_PORT),
@@ -26,7 +26,7 @@ dotenv.config();
       isGlobal: true,
       store: redisStore,
       socket: {
-        host: '172.20.0.3',
+        host: '172.20.0.2',
         port: process.env.REDIS_PORT,
       },
     }),

@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'movies' })
 export class MovieEntity {
@@ -14,8 +8,6 @@ export class MovieEntity {
   @Column({ nullable: false })
   name: string;
 
-  /* @ManyToOne(() => Categories, (categories) => categories.movies)
-  @JoinColumn({ name: 'category_id' }) */
   @Column({ nullable: false })
   category: string;
 
