@@ -14,23 +14,57 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import Redis from 'ioredis';
+import { BadRequest } from '../helper/swagger/badRequest.swagger';
+import { NotFound } from '../helper/swagger/notFound.swagger';
+import { UnauthorizedSwagger } from '../helper/swagger/unauthorized.swagger';
 import { SaveMovie } from './dto/save.movie';
 import { MoviesService } from './movies.service';
+import { MoviesSwagger } from './swagger/movies.swagger';
 
 @Controller('movies')
 @UseGuards(AuthGuard('jwt'))
+@ApiTags('Movies')
 export class MoviesController {
   constructor(
     private readonly moviesService: MoviesService,
     private readonly redisClient: Redis,
   ) {}
 
+  @ApiOperation({ summary: 'Creates movies' })
+  @ApiResponse({
+    status: 201,
+    description: 'Movie created',
+    type: MoviesSwagger,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Some field of the request is wrong',
+    type: BadRequest,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+    type: UnauthorizedSwagger,
+  })
   @Post()
   async save(@Body() data: SaveMovie) {
     return this.moviesService.save(data);
   }
 
+  @ApiOperation({ summary: 'Lists all movies' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lists movies',
+    type: MoviesSwagger,
+    isArray: true,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+    type: UnauthorizedSwagger,
+  })
   @Get()
   @CacheKey('movies')
   @CacheTTL(60)
@@ -54,6 +88,22 @@ export class MoviesController {
     return cacheResult;
   }
 
+  @ApiOperation({ summary: 'Lists movies by id' })
+  @ApiResponse({
+    status: 201,
+    description: 'Movie created',
+    type: MoviesSwagger,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Movie not found',
+    type: NotFound,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+    type: UnauthorizedSwagger,
+  })
   @Get(':id')
   @CacheKey(':id')
   @CacheTTL(60)
@@ -77,6 +127,27 @@ export class MoviesController {
     return cacheResult;
   }
 
+  @ApiOperation({ summary: 'Updates movies' })
+  @ApiResponse({
+    status: 201,
+    description: 'Movie created',
+    type: MoviesSwagger,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Movie not found',
+    type: NotFound,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Some field of the request is wrong',
+    type: BadRequest,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+    type: UnauthorizedSwagger,
+  })
   @Put('/:id')
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -87,6 +158,22 @@ export class MoviesController {
     return result;
   }
 
+  @ApiOperation({ summary: 'Deletes movies' })
+  @ApiResponse({
+    status: 201,
+    description: 'Movie created',
+    type: MoviesSwagger,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Movie not found',
+    type: NotFound,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+    type: UnauthorizedSwagger,
+  })
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id', new ParseUUIDPipe()) id: string) {

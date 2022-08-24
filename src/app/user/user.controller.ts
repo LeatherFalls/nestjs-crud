@@ -11,7 +11,6 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -48,7 +47,7 @@ export class UserController {
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiOperation({ summary: 'Creates users' })
-  async save(@Query() _query: Save, @Body() data: Save) {
+  async save(@Body() data: Save) {
     return this.userService.save(data);
   }
 
@@ -83,7 +82,12 @@ export class UserController {
     return cacheResult;
   }
 
-  @ApiResponse({
+  @Get('/:id')
+  async test(id: string): Promise<UserEntity> {
+    return this.userService.findById(id);
+  }
+
+  /* @ApiResponse({
     status: 200,
     description: 'Listed user by id',
     type: FindUserSwagger,
@@ -98,28 +102,32 @@ export class UserController {
     description: 'Unauthorized',
   })
   @ApiOperation({ summary: 'Lists users by id' })
-  @Get(':id')
-  @CacheKey(':id')
+  @Get('/:id')
+  @CacheKey('user/:id')
   @CacheTTL(60)
-  async findById(id: string) {
+  async findById(id: string): Promise<UserEntity> {
     const result = await this.userService.findById(id);
 
     const cacheResult = await this.redisClient.get(
-      ':id',
+      'user/:id',
       async (error, data) => {
         if (error) console.log(error);
         if (data != null) {
           return JSON.parse(data);
         } else {
-          return this.redisClient.setex(':id', 20000, JSON.stringify(data));
+          return this.redisClient.setex(
+            'user/:id',
+            20000,
+            JSON.stringify(data),
+          );
         }
       },
     );
 
     if (JSON.parse(cacheResult) == null) return result;
 
-    return cacheResult;
-  }
+    return JSON.parse(cacheResult);
+  } */
 
   @ApiResponse({
     status: 200,
