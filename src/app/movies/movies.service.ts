@@ -17,4 +17,8 @@ export class MoviesService {
   async save(data: SaveMovie): Promise<MovieEntity> {
     return this.moviesRepository.save(this.moviesRepository.create(data));
   }
+
+  async findAll(): Promise<MovieEntity[]> {
+    return this.moviesRepository.find();
+  }
 }
