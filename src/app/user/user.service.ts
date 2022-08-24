@@ -55,16 +55,13 @@ export class UserService {
   }
 
   async update(data: Save, id: string): Promise<UserEntity> {
-    const { username, email, password, age } = data;
+    const user = await this.findOneOrFail({ where: { id } });
 
-    const user = await this.findById(id);
+    this.userRepository.merge(user, data);
 
-    user.username = username ? username : user.username;
-    user.email = email ? email : user.email;
-    user.password = password ? password : user.password;
-    user.age = age ? age : user.age;
+    const result = await this.userRepository.save(user);
 
-    return this.userRepository.save(user);
+    return result;
   }
 
   async delete(id: string) {
