@@ -47,4 +47,27 @@ export class MoviesController {
 
     return cacheResult;
   }
+
+  @Get(':id')
+  @CacheKey(':id')
+  @CacheTTL(60)
+  async findById(id: string) {
+    const result = await this.moviesService.findById(id);
+
+    const cacheResult = await this.redisClient.get(
+      ':id',
+      async (error, data) => {
+        if (error) console.log(error);
+        if (data != null) {
+          return JSON.parse(data);
+        } else {
+          return this.redisClient.setex(':id', 20000, JSON.stringify(data));
+        }
+      },
+    );
+
+    if (JSON.parse(cacheResult) == null) return result;
+
+    return cacheResult;
+  }
 }

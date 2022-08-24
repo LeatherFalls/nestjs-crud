@@ -21,4 +21,14 @@ export class MoviesService {
   async findAll(): Promise<MovieEntity[]> {
     return this.moviesRepository.find();
   }
+
+  async findById(id: string): Promise<MovieEntity> {
+    const movie = this.moviesRepository.findOneBy({ id });
+
+    const movieToJson = JSON.stringify(movie);
+
+    await this.cacheManager.set(movieToJson, { ttl: 60 });
+
+    return movie;
+  }
 }
