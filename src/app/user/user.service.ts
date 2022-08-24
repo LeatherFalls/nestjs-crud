@@ -39,9 +39,9 @@ export class UserService {
   async findById(id: string): Promise<UserEntity> {
     const user = this.userRepository.findOne({ where: { id } });
 
-    /*     const userToJson = JSON.stringify(user);
+    const userToJson = JSON.stringify(user);
 
-    await this.cacheManager.set(userToJson, { ttl: 60 }); */
+    await this.cacheManager.set(userToJson, { ttl: 60 });
 
     return user;
   }
