@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsInt,
@@ -10,6 +11,7 @@ import {
 import { RegExHelper } from '../helper/regex.helper';
 
 export class Save {
+  @ApiProperty()
   @IsNotEmpty({
     message: 'username is required',
   })
@@ -18,6 +20,7 @@ export class Save {
   })
   username: string;
 
+  @ApiProperty()
   @IsNotEmpty({
     message: 'email is required',
   })
@@ -26,6 +29,7 @@ export class Save {
   })
   email: string;
 
+  @ApiProperty()
   @IsNotEmpty({
     message: 'password is required',
   })
@@ -37,6 +41,7 @@ export class Save {
   })
   password: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsInt()
   @Min(10)

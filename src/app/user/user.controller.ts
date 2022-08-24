@@ -11,16 +11,24 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import Redis from 'ioredis';
+import { BadRequest } from '../helper/swagger/badRequest.swagger';
+import { NotFound } from '../helper/swagger/notFound.swagger';
 import { Save } from './dto/save.dto';
+import { CreateUserSwagger } from './swagger/create.swagger';
+import { FindUserSwagger } from './swagger/find.swagger';
+import { UpdateUserSwagger } from './swagger/update.swagger';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
 
 @Controller('user')
 @UseGuards(AuthGuard('jwt'))
+@ApiTags('User')
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -28,10 +36,30 @@ export class UserController {
   ) {}
 
   @Post()
-  async save(@Body() data: Save) {
+  @ApiResponse({
+    status: 201,
+    description: 'User created',
+    type: CreateUserSwagger,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Some field of the request is wrong',
+    type: BadRequest,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiOperation({ summary: 'Creates users' })
+  async save(@Query() _query: Save, @Body() data: Save) {
     return this.userService.save(data);
   }
 
+  @ApiOperation({ summary: 'Lists all users' })
+  @ApiResponse({
+    status: 200,
+    description: 'Listed users',
+    type: FindUserSwagger,
+    isArray: true,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Get()
   @CacheKey('user')
   @CacheTTL(60)
@@ -55,6 +83,21 @@ export class UserController {
     return cacheResult;
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Listed user by id',
+    type: FindUserSwagger,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
+    type: NotFound,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiOperation({ summary: 'Lists users by id' })
   @Get(':id')
   @CacheKey(':id')
   @CacheTTL(60)
@@ -78,6 +121,18 @@ export class UserController {
     return cacheResult;
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Updated user',
+    type: UpdateUserSwagger,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Some field of the request is wrong',
+    type: BadRequest,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiOperation({ summary: 'Updates users' })
   @Put('/:id')
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -88,6 +143,17 @@ export class UserController {
     return result;
   }
 
+  @ApiResponse({
+    status: 204,
+    description: 'Deleted user',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
+    type: NotFound,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiOperation({ summary: 'Deletes users' })
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id', new ParseUUIDPipe()) id: string) {
