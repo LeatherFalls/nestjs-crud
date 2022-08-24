@@ -4,7 +4,10 @@ import {
   CacheTTL,
   Controller,
   Get,
+  Param,
+  ParseUUIDPipe,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -69,5 +72,15 @@ export class MoviesController {
     if (JSON.parse(cacheResult) == null) return result;
 
     return cacheResult;
+  }
+
+  @Put('/:id')
+  async update(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() data: SaveMovie,
+  ) {
+    const result = await this.moviesService.update(data, id);
+
+    return result;
   }
 }
