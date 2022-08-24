@@ -83,7 +83,7 @@ export class UserController {
   }
 
   @Get('/:id')
-  async test(id: string): Promise<UserEntity> {
+  async test(id: string) {
     return this.userService.findById(id);
   }
 
