@@ -16,6 +16,6 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(Number(process.env.API_PORT) || 3001);
+  await app.listen(3001);
 }
 bootstrap();
