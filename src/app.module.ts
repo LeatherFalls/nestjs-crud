@@ -6,6 +6,7 @@ import * as dotenv from 'dotenv';
 import * as redisStore from 'cache-manager-redis-store';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MoviesModule } from './app/movies/movies.module';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 dotenv.config();
 
@@ -30,6 +31,16 @@ dotenv.config();
       },
     }),
     MoviesModule,
+    ClientsModule.register([
+      {
+        name: 'mks-challenge',
+        transport: Transport.REDIS,
+        options: {
+          host: process.env.REDIS_HOST,
+          port: 6379,
+        },
+      },
+    ]),
   ],
   providers: [
     {

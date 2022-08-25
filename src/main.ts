@@ -3,11 +3,20 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 dotenv;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+    transport: Transport.REDIS,
+    options: {
+      host: process.env.REDIS_HOST,
+      port: 6379,
+    },
+  });
 
   const config = new DocumentBuilder()
     .setTitle('MKS')
