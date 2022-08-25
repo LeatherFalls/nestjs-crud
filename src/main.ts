@@ -9,7 +9,7 @@ dotenv;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  //
   await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
     transport: Transport.REDIS,
     options: {
