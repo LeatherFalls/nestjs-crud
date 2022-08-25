@@ -23,7 +23,6 @@ dotenv.config();
     UserModule,
     AuthModule,
     CacheModule.register({
-      isGlobal: true,
       store: redisStore,
       socket: {
         host: process.env.REDIS_HOST,
