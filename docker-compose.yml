@@ -12,9 +12,3 @@ services:
       PORT: 3000
     ports:
       - "8080:3000"
-
-  redis:
-    image: redis
-    hostname: redis
-    ports:
-      - "3001:3001"
