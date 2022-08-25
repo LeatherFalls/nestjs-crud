@@ -9,7 +9,7 @@ services:
       - db
       - redis
     environment:
-      DATABASE_URL: postgres://user:password@postgres:5432/db
+      DATABASE_URL: postgres://postgres:vini81342714@localhost:5433/db
       PORT: 3000
     ports:
       - "8080:3000"
