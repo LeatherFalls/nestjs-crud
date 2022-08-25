@@ -1,14 +1,12 @@
 import {
   Body,
   CacheKey,
-  CacheTTL,
   Controller,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
-  ParseUUIDPipe,
   Post,
   Put,
   UseGuards,
@@ -22,6 +20,10 @@ import { UnauthorizedSwagger } from '../helper/swagger/unauthorized.swagger';
 import { SaveMovie } from './dto/save.movie';
 import { MoviesService } from './movies.service';
 import { MoviesSwagger } from './swagger/movies.swagger';
+
+interface idRequest {
+  id: number;
+}
 
 @Controller('movies')
 @UseGuards(AuthGuard('jwt'))
@@ -67,7 +69,6 @@ export class MoviesController {
   })
   @Get()
   @CacheKey('movies')
-  @CacheTTL(60)
   async findAll() {
     const result = await this.moviesService.findAll();
 
@@ -78,7 +79,7 @@ export class MoviesController {
         if (data != null) {
           return JSON.parse(data);
         } else {
-          return this.redisClient.setex('movies', 20000, JSON.stringify(data));
+          return this.redisClient.setex('movies', 1, JSON.stringify(data));
         }
       },
     );
@@ -104,27 +105,30 @@ export class MoviesController {
     description: 'Unauthorized',
     type: UnauthorizedSwagger,
   })
-  @Get(':id')
-  @CacheKey(':id')
-  @CacheTTL(60)
-  async findById(id: string) {
-    const result = await this.moviesService.findById(id);
+  @Get('/:id')
+  @CacheKey('movie/:id')
+  async findById(@Param() id: idRequest) {
+    const result = await this.moviesService.findById(id.id);
+
+    console.log(result);
 
     const cacheResult = await this.redisClient.get(
-      ':id',
+      'movie/:id',
       async (error, data) => {
         if (error) console.log(error);
-        if (data != null) {
+        if (data !== null) {
           return JSON.parse(data);
         } else {
-          return this.redisClient.setex(':id', 20000, JSON.stringify(data));
+          return this.redisClient.setex('movie/:id', 1, JSON.stringify(data));
         }
       },
     );
 
-    if (JSON.parse(cacheResult) == null) return result;
+    if (cacheResult) return cacheResult;
 
-    return cacheResult;
+    console.log(cacheResult);
+
+    return result;
   }
 
   @ApiOperation({ summary: 'Updates movies' })
@@ -149,10 +153,7 @@ export class MoviesController {
     type: UnauthorizedSwagger,
   })
   @Put('/:id')
-  async update(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() data: SaveMovie,
-  ) {
+  async update(@Param('id') id: number, @Body() data: SaveMovie) {
     const result = await this.moviesService.update(data, id);
 
     return result;
@@ -176,7 +177,7 @@ export class MoviesController {
   })
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async delete(@Param('id', new ParseUUIDPipe()) id: string) {
+  async delete(@Param('id') id: number) {
     await this.moviesService.delete(id);
   }
 }

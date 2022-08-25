@@ -35,8 +35,12 @@ export class MoviesService {
     }
   }
 
-  async findById(id: string): Promise<MovieEntity> {
-    const movie = this.moviesRepository.findOneBy({ id });
+  async findById(id: number): Promise<MovieEntity> {
+    const movie = this.moviesRepository.findOne({ where: { id } });
+
+    if (!movie) {
+      throw new NotFoundException('Movie not found');
+    }
 
     const movieToJson = JSON.stringify(movie);
 
@@ -45,8 +49,12 @@ export class MoviesService {
     return movie;
   }
 
-  async update(data: SaveMovie, id: string) {
+  async update(data: SaveMovie, id: number) {
     const movie = await this.findOneOrFail({ where: { id } });
+
+    if (!movie) {
+      throw new NotFoundException('Movie not found');
+    }
 
     this.moviesRepository.merge(movie, data);
 
@@ -55,7 +63,13 @@ export class MoviesService {
     return result;
   }
 
-  async delete(id: string) {
-    this.moviesRepository.delete(id);
+  async delete(id: number) {
+    const movie = await this.findOneOrFail({ where: { id } });
+
+    if (!movie) {
+      throw new NotFoundException('Movie not found');
+    }
+
+    return await this.moviesRepository.delete(id);
   }
 }

@@ -8,7 +8,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseUUIDPipe,
   Post,
   Put,
   UseGuards,
@@ -24,6 +23,10 @@ import { FindUserSwagger } from './swagger/find.swagger';
 import { UpdateUserSwagger } from './swagger/update.swagger';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
+
+interface idRequest {
+  id: number;
+}
 
 @Controller('user')
 @UseGuards(AuthGuard('jwt'))
@@ -82,12 +85,7 @@ export class UserController {
     return cacheResult;
   }
 
-  @Get('/:id')
-  async test(id: string) {
-    return this.userService.findById(id);
-  }
-
-  /* @ApiResponse({
+  @ApiResponse({
     status: 200,
     description: 'Listed user by id',
     type: FindUserSwagger,
@@ -105,8 +103,9 @@ export class UserController {
   @Get('/:id')
   @CacheKey('user/:id')
   @CacheTTL(60)
-  async findById(id: string): Promise<UserEntity> {
-    const result = await this.userService.findById(id);
+  async findById(@Param('id') id: idRequest): Promise<UserEntity> {
+    console.log(id);
+    const result = await this.userService.findById(id.id);
 
     const cacheResult = await this.redisClient.get(
       'user/:id',
@@ -127,7 +126,7 @@ export class UserController {
     if (JSON.parse(cacheResult) == null) return result;
 
     return JSON.parse(cacheResult);
-  } */
+  }
 
   @ApiResponse({
     status: 200,
@@ -143,7 +142,7 @@ export class UserController {
   @ApiOperation({ summary: 'Updates users' })
   @Put('/:id')
   async update(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('id') id: number,
     @Body() data: Save,
   ): Promise<UserEntity> {
     const result = await this.userService.update(data, id);
@@ -164,7 +163,7 @@ export class UserController {
   @ApiOperation({ summary: 'Deletes users' })
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async delete(@Param('id', new ParseUUIDPipe()) id: string) {
+  async delete(@Param('id') id: number) {
     await this.userService.delete(id);
   }
 }

@@ -36,8 +36,12 @@ export class UserService {
     return users;
   }
 
-  async findById(id: string): Promise<UserEntity> {
+  async findById(id: number): Promise<UserEntity> {
     const user = this.userRepository.findOne({ where: { id } });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
     const userToJson = JSON.stringify(user);
 
@@ -54,7 +58,7 @@ export class UserService {
     }
   }
 
-  async update(data: Save, id: string): Promise<UserEntity> {
+  async update(data: Save, id: number): Promise<UserEntity> {
     const user = await this.findOneOrFail({ where: { id } });
 
     this.userRepository.merge(user, data);
@@ -64,7 +68,7 @@ export class UserService {
     return result;
   }
 
-  async delete(id: string) {
+  async delete(id: number) {
     this.userRepository.delete(id);
   }
 }
